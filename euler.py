@@ -42,12 +42,12 @@ def d_psi(t, psi_x):
     return 1j * H_psi
 
 for i in range(steps):
-    # H_psi = -0.5 * KE_constant * momentum_operator(momentum_operator(psi_x, dx), dx) + 0.5 * PE_constant * x ** 2 * psi_x
-    # psi_x = psi_x + 1j * dt * H_psi
+    H_psi = -0.5 * KE_constant * momentum_operator(momentum_operator(psi_x, dx), dx) + 0.5 * PE_constant * x ** 2 * psi_x
+    psi_x = psi_x - 1j * dt * H_psi
     # divide by norm
-    # psi_x = psi_x / np.sqrt(np.sum(np.abs(psi_x)**2) * dx)
+    psi_x = psi_x / np.sqrt(np.sum(np.abs(psi_x)**2) * dx)
     t0 = 0
-    psi_x = solve_ivp(d_psi, [t0, dt], psi_x, t_eval=[dt], method='RK45').y.flatten()
+    # psi_x = solve_ivp(d_psi, [t0, dt], psi_x, t_eval=[dt], method='RK45').y.flatten()
     # print(f"shape of psi_x: {psi_x.shape}")
     # print(psi_x)
     if i % int(steps/100) == 0:
@@ -99,4 +99,40 @@ plt.show()
 print(E_list[:5])
 print(KE_list[:5])
 print(PE_list[:5])
+# %%
+from matplotlib.animation import FuncAnimation
+
+dx = 1 / 1000
+x_min = -10
+x_max = 10
+x = np.linspace(x_min, x_max, int(1 / dx))
+steps = 1000000
+
+psi_x = np.exp(0.5 * -((x-0.1)**2))
+psi_x = psi_x / np.sqrt(np.sum(np.abs(psi_x)**2) * dx)
+
+# Create a figure for the animation
+fig, ax = plt.subplots()
+
+# Initialize two line objects (real and imaginary parts)
+line1, = ax.plot(x, np.real(psi_x), 'b-')  # blue line for real part
+line2, = ax.plot(x, np.imag(psi_x), 'r-')  # red line for imaginary part
+
+def update(i):
+    # Calculate H_psi and update psi_x as before
+    # H_psi = -0.5 * KE_constant * momentum_operator(momentum_operator(psi_x, dx), dx) + 0.5 * PE_constant * x ** 2 * psi_x
+    # psi_x = psi_x - 1j * dt * H_psi
+    # psi_x = psi_x / np.sqrt(np.sum(np.abs(psi_x)**2) * dx)
+
+    line1.set_ydata(np.sin(x + i / 10))
+    line2.set_ydata(np.cos(x + i / 10))
+    # Update the line data to reflect the new psi_x
+    # line1.set_ydata(np.real(psi_x))
+    # line2.set_ydata(np.imag(psi_x))
+
+    return line1, line2,
+
+ani = FuncAnimation(fig, update, frames=range(steps), blit=True)
+
+plt.show()
 # %%
