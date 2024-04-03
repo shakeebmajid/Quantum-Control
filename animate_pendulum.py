@@ -55,7 +55,7 @@ if sys.argv[1] == 'wavefunction':
 
 else:
     ax.set_xlim(-np.pi, np.pi)
-    ax.set_ylim(0, 1.5)
+    ax.set_ylim(0, 3)
     ani = FuncAnimation(fig, update_2, frames=range(int(steps/1000)), interval=int(sys.argv[2]), blit=True)
 
     ax.plot(phi, pendulum_potential, 'g-')
